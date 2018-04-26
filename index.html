@@ -239,6 +239,368 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/26/浏览器是如何工作的？/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Du Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/dupeng.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到我的个人技术分享博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/26/浏览器是如何工作的？/" itemprop="url">浏览器是如何工作的？</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-26T16:49:02+08:00">
+                2018-04-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="浏览器是如何工作的？"><a href="#浏览器是如何工作的？" class="headerlink" title="浏览器是如何工作的？"></a>浏览器是如何工作的？</h1><h2 id="为什么要了解浏览器是如何工作的"><a href="#为什么要了解浏览器是如何工作的" class="headerlink" title="为什么要了解浏览器是如何工作的"></a>为什么要了解浏览器是如何工作的</h2><p>想要写出一个最佳实践的页面，要实现性能优化，就要好好了解了解浏览器的工作原理。</p>
+<blockquote>
+<ul>
+<li>了解浏览器如何进行加载，可以在引用外部样式表文件、外部 JavaScript 文件时，将他们放到合适的位置，使浏览器以最快的速度及合理的顺序将文件加载完毕。</li>
+<li>了解浏览器如何进行解析，可以在构建 DOM 结构，组织 CSS 选择器时，选择最优的写法，提高浏览器的解析效率。</li>
+<li>了解浏览器如何进行渲染，明白渲染的过程，在设置元素属性，编写 JavaScript 文件时，可以减少 “reflow” “repaint” 的消耗。</li>
+</ul>
+</blockquote>
+<h2 id="浏览器的主要功能及构成"><a href="#浏览器的主要功能及构成" class="headerlink" title="浏览器的主要功能及构成"></a>浏览器的主要功能及构成</h2><p><strong>浏览器的主要功能</strong> 是将用户选择的 web 资源呈现出来，它需要从服务器请求资源，并将其显示在浏览器窗口中，资源的格式通常是 HTML，也包括 PDF、image 及其他格式。用户用 URI（Uniform Resource Identifier 统一资源标识符）来指定所请求资源的位置。</p>
+<p><strong>浏览器的主要构成</strong><br>浏览器的主要组件包括：<br>1.用户界面 － 包括地址栏、后退/前进按钮、书签目录等，也就是你所看到的除了用来显示你所请求页面的主窗口之外的其他部分。<br>2.浏览器引擎 － 用来查询及操作渲染引擎的接口。<br>3.渲染引擎 － 用来显示请求的内容，例如，如果请求内容为 html，它负责解析 html 及 css，并将解析后的结果显示出来。<br>4.网络 － 用来完成网络调用，例如 http 请求，它具有平台无关的接口，可以在不同平台上工作。<br>5.UI 后端 － 用来绘制类似组合选择框及对话框等基本组件，具有不特定于某个平台的通用接口，底层使用操作系统的用户接口。<br>6.JS 解释器 － 用来解释执行 JS 代码。<br>7.数据存储 － 属于持久层，浏览器需要在硬盘中保存类似 cookie 的各种数据，HTML5 定义了 web database 技术，这是一种轻量级完整的客户端存储技术。</p>
+<p><img src="/2018/04/26/浏览器是如何工作的？/1.png" alt="logo"></p>
+<h1 id="浏览器的渲染"><a href="#浏览器的渲染" class="headerlink" title="浏览器的渲染"></a>浏览器的渲染</h1><h2 id="渲染引擎简介"><a href="#渲染引擎简介" class="headerlink" title="渲染引擎简介"></a>渲染引擎简介</h2><p>渲染引擎的职责就是渲染，即在浏览器窗口中显示所请求的内容。</p>
+<p>默认情况下，渲染引擎可以显示 html、xml 文档及图片，它也可以借助插件（一种浏览器扩展）显示其他类型数据，例如使用 PDF 阅读器插件，可以显示 PDF 格式，这里先不讨论插件及扩展，只讨论渲染引擎最主要的用途——显示应用了 CSS 之后的 html 及图片。</p>
+<h2 id="渲染流程"><a href="#渲染流程" class="headerlink" title="渲染流程"></a>渲染流程</h2><p><img src="/2018/04/26/浏览器是如何工作的？/2.png" alt="logo"><br>渲染引擎首先通过网络获得所请求文档的内容，通常以 8K 分块的方式完成，即以 8K 每块下载 html 页面。</p>
+<p>然后解析页面生成 DOM 树，遇到 CSS 标签或 JS 脚本标签就新起线程去下载他们，并继续构建 DOM。</p>
+<p>CSS 下载完后解析为 CSS 规则树，浏览器结合 CSS 规则树和 DOM 树生成 Render Tree。Render Tree 由一些包含有颜色和大小等属性的矩形组成，它们将被按照正确的顺序显示到屏幕上。</p>
+<p>JavaScript 下载后可以通过 DOM API 修改 DOM，通过 CSSOM(CSS Object Model) API 修改样式作用域 Render Tree。注意：构建 CSSOM 会阻塞 JavaScript 的执行，JavaScript 的执行也会阻塞 DOM 的构建。</p>
+<p>每次修改会造成 Render Tree 的重新布局和重绘。只要修改 DOM 或修改了元素的形状或大小，就会触发 Reflow，单纯修改元素的颜色只需 Repaint 一下（调用操作系统 Native GUI 的 API 绘制）。</p>
+<p>Render Tree 构建好了之后，将会执行布局过程，它将确定每个节点在屏幕上的确切坐标。再下一步就是绘制，即遍历 Render Tree，并使用 UI 后端层绘制每个节点。也可用下图描述：<br><img src="/2018/04/26/浏览器是如何工作的？/3.png" alt="logo"><br>值得注意的是，这个过程是逐步完成的，为了更好的用户体验，渲染引擎将会尽可能早的将内容呈现到屏幕上，并不会等到所有的 html 都解析完成之后再去构建和布局 Render Tree。它是解析完一部分内容就显示一部分内容，同时，可能还在通过网络下载其余内容。</p>
+<h2 id="reflow-与-repaint"><a href="#reflow-与-repaint" class="headerlink" title="reflow 与 repaint"></a>reflow 与 repaint</h2><ol>
+<li>用户输入网址（假设是个 html 页面，并且是第一次访问），浏览器向服务器发出请求，服务器返回 html 文件；</li>
+<li>浏览器开始载入 html 代码，发现 <code>&lt;head&gt;</code> 标签内有一个 <code>&lt;link&gt;</code>标签引用外部 CSS 文件；</li>
+<li>浏览器发出 CSS 文件的请求，服务器返回这个 CSS 文件；</li>
+<li>浏览器继续载入 html 中 <code>&lt;body&gt;</code> 部分的代码，并且 CSS 文件已经拿到手了，可以开始渲染页面了；</li>
+<li>浏览器在代码中发现一个 <code>&lt;img&gt;</code>标签引用了一张图片，向服务器发出请求。此时浏览器不会等到图片下载完，而是继续渲染后面的代码；</li>
+<li>服务器返回图片文件，由于图片占用了一定面积，影响了后面段落的排布，因此浏览器需要回过头来重新渲染这部分代码；</li>
+<li>浏览器发现了一个包含一行 JavaScript 代码的 <code>&lt;script&gt;</code> 标签，赶快运行它；</li>
+<li>JavaScript 脚本执行了这条语句，它命令浏览器隐藏掉代码中的某个 <code>&lt;div&gt; （style.display=”none”）</code>。杯具啊，突然就少了这么一个元素，浏览器不得不重新渲染这部分代码；</li>
+<li>终于等到了 <code>&lt;/html&gt;</code> 的到来，浏览器泪流满面……</li>
+<li>等等，还没完，用户点了一下界面中的“换肤”按钮，JavaScript 让浏览器换了一下 <code>&lt;link&gt;</code> 标签的 CSS 路径；</li>
+<li>浏览器召集了在座的各位 <code>&lt;div&gt;&lt;span&gt;&lt;ul&gt;&lt;li&gt;</code> 们，“大伙儿收拾收拾行李，咱得重新来过……”，浏览器向服务器请求了新的 CSS 文件，重新渲染页面。</li>
+</ol>
+<p>页面为什么会慢？那是因为浏览器要花时间、花精力去渲染，尤其是当它发现某个部分发生了点变化影响了布局，需要倒回去重新渲染，我们称这个回退的过程叫 reflow。</p>
+<p>reflow 几乎是无法避免的。现在常见的一些效果，比如树状目录的折叠、展开（实质上是元素的显示与隐藏）等，都将引起浏览器的 reflow。鼠标滑过、点击等，只要这些行为引起了页面上某些元素的占位面积、定位方式、边距等属性的变化，都会引起它内部、周围甚至整个页面的重新渲染。通常我们都无法预估浏览器到底会 reflow 哪一部分的代码，它们都彼此相互影响着。</p>
+<p><img src="/2018/04/26/浏览器是如何工作的？/4.jpg" alt="logo"><br>与 reflow 有个看上去差不多的术语叫 repaint (重绘)，如果只是改变了某个元素的背景颜色，文字颜色等，不影响元素周围或内部布局的属性，将只会引起浏览器的 repaint，重画某一部分。<br><img src="/2018/04/26/浏览器是如何工作的？/5.jpg" alt="logo"></p>
+<h2 id="引起-repaint-和-reflow-的一些操作"><a href="#引起-repaint-和-reflow-的一些操作" class="headerlink" title="引起 repaint 和 reflow 的一些操作"></a>引起 repaint 和 reflow 的一些操作</h2><p>DOM Tree 里的每个结点都会有 reflow 方法，一个结点的 reflow 很有可能导致子结点，甚至父点以及同级结点的 reflow。在一些高性能的电脑上也许还没什么，但是如果 reflow 发生在手机上，那么这个过程是非常痛苦和耗电的。</p>
+<p>所以，下面这些动作有很大可能会是成本比较高的:</p>
+<blockquote>
+<ul>
+<li>当你增加、删除、修改 DOM 结点时；</li>
+<li>当你移动 DOM 的位置，或是搞个动画的时候；</li>
+<li>当你修改 CSS 样式的时候；</li>
+<li>当你 Resize 窗口的时候（移动端没有这个问题），或是滚动的时候；</li>
+<li>当你修改网页的默认字体时；</li>
+</ul>
+</blockquote>
+<p>注：display:none 会触发 reflow，而 visibility:hidden 只会触发 repaint，因为没有发现位置变化。</p>
+<h2 id="reflow-优化"><a href="#reflow-优化" class="headerlink" title="reflow 优化"></a>reflow 优化</h2><p>reflow 是不可避免的，只能将 reflow 对性能的影响减到最小,给出下面几条建议：</p>
+<p><strong>1.</strong> 不要一条一条地修改 DOM 的样式。与其这样，还不如预先定义好 css 的 class，然后修改 DOM 的 className：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 不好的写法</span><br><span class="line">var left = 10,</span><br><span class="line">	top = 10;</span><br><span class="line">elem.style.left = left + &quot;px&quot;;</span><br><span class="line">elem.style.top  = top  + &quot;px&quot;;</span><br><span class="line">// 推荐写法</span><br><span class="line">elem.className += &quot; classname&quot;;</span><br></pre></td></tr></table></figure></p>
+<p><strong>2.</strong> 把 DOM 离线后修改。如</p>
+<blockquote>
+<ul>
+<li>使用 DocumentFragment 对象在内存里操作 DOM。</li>
+<li>先把 DOM 给 display:none (有一次 reflow)，然后你想怎么改就怎么改。比如修改 100 次，然后再把他显示出来。</li>
+<li>clone 一个 DOM 节点到内存里，然后想怎么改就怎么改，改完后，和在线的那个的交换一下。</li>
+</ul>
+</blockquote>
+<p><strong>3.</strong> 不要把 DOM 节点的属性值放在一个循环里当成循环里的变量。不然这会导致大量地读写这个结点的属性。</p>
+<p><strong>4.</strong> 尽可能的修改层级比较低的 DOM节点。当然，改变层级比较低的 DOM节点有可能会造成大面积的 reflow，但是也可能影响范围很小。</p>
+<p><strong>5.</strong> 为动画的 HTML 元件使用 fixed 或 absoult 的 position，那么修改他们的 CSS 是会大大减小 reflow 。</p>
+<p><strong>6.</strong> 千万不要使用 table 布局。因为可能很小的一个小改动会造成整个 table 的重新布局。<br>reflow 要比 repaint 更花费时间，因为 reflow 也会引发 repaint，也就更影响性能。所以在写代码的时候，要尽量避免过多的 reflow。</p>
+<p>以上这些仅是对浏览器工作原理的一个简单说明，大家如果对它感兴趣，可以继续搜索相关文章深入学习，因为我觉得理解浏览器的原理是很重要的，可以帮助我们写出性能更好的页面。</p>
+<p>参考：</p>
+<p><strong><a href="http://taligarsiel.com/Projects/howbrowserswork1.htm" target="_blank" rel="noopener">http://taligarsiel.com/Projects/howbrowserswork1.htm</a></strong></p>
+<p><strong><a href="https://segmentfault.com/a/1190000002629708" target="_blank" rel="noopener">https://segmentfault.com/a/1190000002629708</a></strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/26/sass使用教程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Du Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/dupeng.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到我的个人技术分享博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/26/sass使用教程/" itemprop="url">sass使用教程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-26T15:35:52+08:00">
+                2018-04-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>以前我们在写 CSS 时，通常都是直接在外部 CSS 文件中一个属性一个属性的敲，如果要实现代码的复用，那就 ctrl+c 和 ctrl+v 了，如果要使用某个 RGB 颜色值，还得一遍遍的翻回去复制。这样的开发效率很低，并且也很烦琐，因为 CSS 并不是编程语言，所以也就不能像写 JavaScript 代码一样来实现流程控制等操作了。</p>
+<p>幸运的是现在我们有了“CSS预处理器”（css preprocessor），在 CSS 中加入了编程元素，当然不是直接使用 CSS 来实现编程，而是使用专门的编程语言，进行设计后再编译成 CSS 文件。<br><img src="/2018/04/26/sass使用教程/sass_logo.png" alt="logo"></p>
+<h1 id="SASS-安装与使用"><a href="#SASS-安装与使用" class="headerlink" title="SASS 安装与使用"></a>SASS 安装与使用</h1><p><img src="/2018/04/26/sass使用教程/sass.png" alt="logo"></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>要使用 SASS 首先需要安装 SASS 环境，可参见：<a href="http://sass-lang.com/install。" target="_blank" rel="noopener">http://sass-lang.com/install。</a></p>
+<p>SASS 是基于 Ruby 语言写的，所以必须先安装 Ruby，但是 SASS 与 Ruby 的语法没有关系，即使完全不懂 Ruby，也可以使用 SASS。</p>
+<p>windows 系统中安装 Ruby 最快速的方式是使用 RubyInstaller。RubyInstaller 也会自动安装命令行工具让我们可以直接使用它的库。</p>
+<p>Ruby 安装好后，打开命令提示符（win+r 运行框中输入 cmd 回车即可），输入以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gem install sass</span><br></pre></td></tr></table></figure></p>
+<p>即可安装 SASS，但安装有时也会被墙，所以可以直接下载 SASS 的 gem 库离线安装，下载地址为：<a href="https://api.rubygems.org/gems/sass-3.4.22.gem。" target="_blank" rel="noopener">https://api.rubygems.org/gems/sass-3.4.22.gem。</a></p>
+<p>下载后在命令提示符下直接安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gem install d:/sass-3.4.22.gem</span><br></pre></td></tr></table></figure></p>
+<p>当然我们前边也安装了 Gulp 插件 gulp-sass，可以借助 Gulp 来实现 SASS 编译，也不用安装 Ruby。详情见 《Gulp 使用教程》。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>SASS 文件就是普通的文本文件，可以直接使用 CSS 语法，文件后缀名是 .scss（3.0以前的版本通常使用 .sass 后缀）。</p>
+<p>如果安装了 Ruby 环境和 SASS，则可以在命令提示符下输入：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sass style.scss</span><br></pre></td></tr></table></figure></p>
+<p>会直接在屏幕上显示出 .scss 文件转换为 .css 文件后的样式内容。也可以继续跟上输出文件的路径名，将编译后的 CSS 内容保存到文件中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sass style.scss style.css</span><br></pre></td></tr></table></figure></p>
+<p>在编译成 CSS 时，SASS 提供四种编译风格：</p>
+<blockquote>
+<ul>
+<li>nested —- 嵌套缩进</li>
+<li>expanded —- 没有缩进，扩展的</li>
+<li>compact —- 简洁格式</li>
+<li>compressed —- 压缩</li>
+</ul>
+</blockquote>
+<p>默认是使用 nested 风格，在生产环境当中，一般使用最后一个（compressed）。</p>
+<p>也可以让 SASS 监听某个文件或目录的修改，自动生成编译后的版本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sass --watch style.scss:style.css</span><br></pre></td></tr></table></figure></p>
+<p>或<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sass --watch app/sass:public/stylesheets</span><br></pre></td></tr></table></figure></p>
+<p>如果没有安装 Ruby 环境而是使用 Gulp 插件，可参见 <a href="https://github.com/dlmanning/gulp-sass" target="_blank" rel="noopener">https://github.com/dlmanning/gulp-sass</a> 的使用。<br>如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var gulp = require(&quot;gulp&quot;),</span><br><span class="line">	sass = require(&quot;gulp-sass&quot;);</span><br><span class="line"></span><br><span class="line">gulp.task(&quot;sass&quot;, function()&#123;</span><br><span class="line">	gulp.src(&quot;scss/*.scss&quot;)</span><br><span class="line">		.pipe(sass(&#123;outputStyle:&quot;compact&quot;&#125;))</span><br><span class="line">		.pipe(gulp.dest(&quot;dist/css&quot;));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h1 id="SASS-基本语法"><a href="#SASS-基本语法" class="headerlink" title="SASS 基本语法"></a>SASS 基本语法</h1><h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>SASS 中有三种注释：<br><strong>单行注释</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">// 单行注释</span><br></pre></td></tr></table></figure></p>
+<p>在输出 CSS 文件时不保留该注释内容。<br><strong>多行注释</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * 多行注释内容</span><br><span class="line"> * 作者：小杜</span><br><span class="line"> */</span><br></pre></td></tr></table></figure></p>
+<p>在编译输出的非压缩格式的 CSS 文件中会保留，压缩输出格式中不会保留。<br><strong>强制注释</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/*!</span><br><span class="line">* 强制注释内容</span><br><span class="line">*/</span><br></pre></td></tr></table></figure></p>
+<p>表示强制保留注释内容，不管输出什么格式。</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>SASS 中的所有变量都是以 $ 开头，后紧跟变量名称，变量名与变量值之间以冒号（:）分隔开：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$width : 180px;</span><br><span class="line">$bgColor : #eaeaea;</span><br><span class="line"></span><br><span class="line">.container &#123;</span><br><span class="line">	width: $width;</span><br><span class="line">	background-color: $bgColor;</span><br><span class="line">	height: 360px;</span><br><span class="line">	border:1px solid;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.box &#123;</span><br><span class="line">	width: $width;</span><br><span class="line">	height:230px;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.cube &#123;</span><br><span class="line">	background-color: $bgColor;</span><br><span class="line">	border: 1px solid;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>生成的 CSS 文件为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.container &#123; width: 180px; background-color: #eaeaea; height: 360px; border: 1px solid; &#125;</span><br><span class="line"></span><br><span class="line">.box &#123; width: 180px; height: 230px; &#125;</span><br><span class="line"></span><br><span class="line">.cube &#123; background-color: #eaeaea; border: 1px solid; &#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果变量需要镶嵌在字符串之中，需要写在 #{} 之中，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$l : left;</span><br><span class="line">$r : right;</span><br><span class="line"></span><br><span class="line">.box &#123;</span><br><span class="line">	margin-#&#123;$l&#125;: 30px;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.container &#123;</span><br><span class="line">	margin-#&#123;$r&#125;: 20px;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>生成的 CSS 文件为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.box &#123; margin-left: 30px; &#125;</span><br><span class="line">.container &#123; margin-right: 20px; &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="嵌套"><a href="#嵌套" class="headerlink" title="嵌套"></a>嵌套</h2><p><strong>选择器嵌套</strong><br>scss 文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#container &#123;</span><br><span class="line">	.title &#123;</span><br><span class="line">		width:300px;</span><br><span class="line">		height:200px;</span><br><span class="line">		border:1px solid #ccc;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	.main_body&#123;</span><br><span class="line">		width:250px;</span><br><span class="line">		height:350px;</span><br><span class="line">		border:1px solid #ccc;</span><br><span class="line">		border-radius:5px;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>超级链接伪类样式的设计，SASS 中可以通过 &amp; 符号引用父属性：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">a &#123;</span><br><span class="line">	&amp;:link &#123;</span><br><span class="line">		text-decoration: none;</span><br><span class="line">		color: black;</span><br><span class="line">	&#125;</span><br><span class="line">	&amp;:visited &#123;</span><br><span class="line">		text-decoration: none;</span><br><span class="line">		color: black;</span><br><span class="line">	&#125;</span><br><span class="line">	&amp;:hover &#123;</span><br><span class="line">		text-decoration: underline;</span><br><span class="line">		color: red;</span><br><span class="line">	&#125;</span><br><span class="line">	&amp;:active &#123;</span><br><span class="line">		text-decoration: underline;</span><br><span class="line">		color: gray;</span><br><span class="line">		font-size: 18px;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>属性嵌套</strong><br>scss 文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#container &#123;</span><br><span class="line">	background: &#123;</span><br><span class="line">		color : #ccc;</span><br><span class="line">		image : url(imgs/001.png);</span><br><span class="line">		position: top left;</span><br><span class="line">		repeat: no-repeat;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>属性嵌套使用得相对较少一些。</p>
+<h2 id="代码重用"><a href="#代码重用" class="headerlink" title="代码重用"></a>代码重用</h2><p><strong>Mixin 混合</strong><br>Mixin 类似于宏命令，可以实现代码块重用，使用 @mixin 命令定义代码块：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@mixin left-block &#123;</span><br><span class="line">	width: 360px;</span><br><span class="line">	line-height: 30px;</span><br><span class="line">	background: #ccc;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.left_side_nav &#123;</span><br><span class="line">	@include left-block;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.left_side_fav &#123;</span><br><span class="line">	@include left-block;</span><br><span class="line">	color : red;</span><br><span class="line">	font-size: 12px;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用 @include 命令复用代码块。</p>
+<p>@mixin 可以使用参数与默认值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@mixin left-block($width:300px) &#123;</span><br><span class="line">	width: $width;</span><br><span class="line">	line-height: 30px;</span><br><span class="line">	background: #ccc;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.left_side_nav &#123;</span><br><span class="line">	@include left-block(200px);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.left_side_fav &#123;</span><br><span class="line">	@include left-block;</span><br><span class="line">	color : red;</span><br><span class="line">	font-size: 12px;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当使用 @include 调用代码块复用时，如果不使用默认值，则直接传递实际值即可，如果不传递值，则使用默认值，上述示例编译成 CSS：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.left_side_nav &#123; width: 200px; line-height: 30px; background: #ccc; &#125;</span><br><span class="line"></span><br><span class="line">.left_side_fav &#123; width: 300px; line-height: 30px; background: #ccc; color: red; font-size: 12px; &#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>extend 继承/扩展</strong><br>也可使用继承/扩展来减少重复代码实现代码重用，可以让一个选择器去继承另一个选择中所有的样式，使用命令 @extend：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">.left-block &#123;</span><br><span class="line">	width: 300px;</span><br><span class="line">	line-height: 30px;</span><br><span class="line">	background: #ccc;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.left_side_nav &#123;</span><br><span class="line">	@extend .left-block;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.left_side_fav &#123;</span><br><span class="line">	@extend .left-block;</span><br><span class="line">	color : red;</span><br><span class="line">	font-size: 12px;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>import 导入</strong><br>可使用 @import 命令导入外部文件，外部文件可以是 .scss 文件，也可以是 .css 文件，但当导入 .css 文件时，相当于是 CSS 中的 @import 命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@import &apos;plugin.scss&apos;;</span><br><span class="line">@import &apos;../css/style.css&apos;;</span><br><span class="line"></span><br><span class="line">.cube &#123;</span><br><span class="line">	color:red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>生成的 CSS：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@import url(../css/style.css);</span><br><span class="line">.box &#123; width: 300px; height: 200px; background: #ccc; &#125;</span><br><span class="line"></span><br><span class="line">.cube &#123; color: red; &#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="流程控制指令"><a href="#流程控制指令" class="headerlink" title="流程控制指令"></a>流程控制指令</h1><p><strong>@if</strong><br>条件控制指令，类似于 JavaScript 中的简单 if 结构，即当 if 条件满足时执行指定的表达式，语法结构为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@if 条件 &#123;</span><br><span class="line">	// 条件为真时执行的样式</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当然有 @if 就有配套的 @else，与 JavaScript 中的 if-else 是一个道理：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@if 条件 &#123;</span><br><span class="line">	// 条件为真时执行的样式</span><br><span class="line">&#125; @else &#123;</span><br><span class="line">	// 条件为假时执行的样式</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$width : 360px;</span><br><span class="line"></span><br><span class="line">.container &#123;</span><br><span class="line">	@if $width / 3 &gt; 100 &#123;</span><br><span class="line">		border: 1px solid;</span><br><span class="line">		padding: 10px;</span><br><span class="line">	&#125; @else &#123;</span><br><span class="line">		border:5px solid;</span><br><span class="line">		padding:20px;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>@for</strong><br>循环控制指令，类似于 JavaScript 中的 for 循环结构。语法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@for $var from &lt;start&gt; to &lt;end&gt; &#123;</span><br><span class="line">	// 循环体</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@for $var from 1 to 10 &#123;</span><br><span class="line">	.m-#&#123;$var&#125; &#123;margin: #&#123;$var&#125;px;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>生成 .m-1、.m-2 …… .m-10 10个样式。<br><strong>@while</strong><br>类似于 JavaScript 中的 while 循环，语法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@while 条件 &#123;</span><br><span class="line">	// 循环体</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$i : 10;</span><br><span class="line"></span><br><span class="line">@while $i &gt; 0 &#123;</span><br><span class="line">	.p-#&#123;$i&#125; &#123;padding: #&#123;$i&#125;px&#125;;</span><br><span class="line">	$i : $i - 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>@each</strong><br>@each 与 @for 类似，语法结构为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@each $var in &lt;list&gt;</span><br></pre></td></tr></table></figure></p>
+<p>@each 常用于列表或映射数据的循环，示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$list : info warning debug error;</span><br><span class="line"></span><br><span class="line">@each $var in $list &#123;</span><br><span class="line">	.icon-#&#123;$var&#125; &#123;</span><br><span class="line">		background-image:url(imgs/#&#123;$var&#125;.png);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>函数的功能主要是数据的运算，SASS 中可以将一些值交给函数进行处理，具体的处理方式由定义的函数具体的设计确定。</p>
+<p>自定义函数的语法结构为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@function 函数名称(参数列表)&#123;</span><br><span class="line">	// 数据处理</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$colors : (light:#fff, dark:#000, gray:#ccc);</span><br><span class="line"></span><br><span class="line">@function color($name) &#123;</span><br><span class="line">	@return map-get($colors, $name);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.container &#123;</span><br><span class="line">	background-color: color(gray);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>map-get($colors, $name)</code>的作用是获取 $colors 中名称为 $name 的值，变量 $colors 是一个 map 集合，保存的是名值对。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>本文将 SASS 使用过程中常用用法做了简单的总结，日常开发一般就不需要再去查官方文档了，如果有更深层次的使用或对某个用法不熟悉，也可查询官方文档，详情见：<a href="http://sass-lang.com/documentation/file.SASS_REFERENCE.html。" target="_blank" rel="noopener">http://sass-lang.com/documentation/file.SASS_REFERENCE.html。</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/12/git使用教程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -854,7 +1216,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
